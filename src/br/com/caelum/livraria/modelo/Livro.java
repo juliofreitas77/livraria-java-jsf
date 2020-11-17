@@ -5,11 +5,14 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+import br.com.caelum.livraria.dao.DAO;
 
 @Entity
 public class Livro {
@@ -22,12 +25,15 @@ public class Livro {
 	private String isbn;
 	private double preco;
 	
+	public Livro() {
+	}
+	
 	@Temporal(TemporalType.TIMESTAMP)
 	private Calendar dataLancamento = Calendar.getInstance();
 
-	@ManyToMany
+	@ManyToMany(fetch=FetchType.EAGER)
 	private List<Autor> autores = new ArrayList<Autor>();
-
+	
 	public List<Autor> getAutores() {
 		return autores;
 	}
@@ -35,9 +41,11 @@ public class Livro {
 	public void adicionaAutor(Autor autor) {
 		this.autores.add(autor);
 	}
-
-	public Livro() {
+	
+	public void removerAutor(Autor autor) {
+		this.autores.remove(autor);
 	}
+	
 
 	public Integer getId() {
 		return id;

@@ -17,6 +17,7 @@ import br.com.caelum.livraria.modelo.Livro;
 @ViewScoped
 @ManagedBean
 public class LivroBean implements Serializable {
+
 	private static final long serialVersionUID = 1L;
 
 	private Livro livro = new Livro();
@@ -25,6 +26,10 @@ public class LivroBean implements Serializable {
 		return livro;
 	}
 
+	public void setLivro(Livro livro) {
+		this.livro = livro;
+	}
+	
 	private Integer autorId;
 
 	public void setAutorId(Integer autorId) {
@@ -52,12 +57,17 @@ public class LivroBean implements Serializable {
 
 		if (livro.getAutores().isEmpty()) {
 			FacesContext.getCurrentInstance().addMessage("autor",
-					new FacesMessage("Livro deve ter pelo menos um Autor"));
+					new FacesMessage("Livro deve ter pelo menos um Autor."));
 			return;
-		} else {
-			new DAO<Livro>(Livro.class).adiciona(this.livro);
-			this.livro = new Livro();
 		}
+
+		if (this.livro.getId() == null) {
+			new DAO<Livro>(Livro.class).adiciona(this.livro);
+		} else {
+			new DAO<Livro>(Livro.class).atualiza(this.livro);
+		}
+
+		this.livro = new Livro();
 	}
 
 	public void gravarAutor() {
@@ -70,6 +80,20 @@ public class LivroBean implements Serializable {
 		if (!valor.startsWith("1")) {
 			throw new ValidatorException(new FacesMessage("Deveria começar com 1"));
 		}
+	}
+	
+	public void removerAutorDoLivro(Autor autor) {
+	    this.livro.removerAutor(autor);
+	}
+	
+	public void remover(Livro livro) {
+		System.out.println("Removendo livro " + livro.getTitulo());
+	    new DAO<Livro>(Livro.class).remove(livro);
+	}
+	
+	public void carregar(Livro livro) {
+		System.out.println("Carregando livro " + livro.getTitulo());
+		this.livro = livro;
 	}
 
 }
